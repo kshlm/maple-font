@@ -1,0 +1,42 @@
+name: Narrow/Slim build
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  narrow-slim-build:
+    runs-on: ubuntu-latest
+    env:
+      BRANCH: ${{ github.ref_name }}   
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+          prune-cache: false
+          python-version: "3.12"
+      - id: build
+        name: Run custom script
+        run: |
+          uv sync --locked --no-dev
+          uv run build.py --archive --width=narrow --nf
+          mv fonts/archive archive
+          uv run build.py --archive --width=slim --nf
+          cp fonts/archive/*.* archive
+      - name: Create release
+        if: ${{ success() }}
+        run: |
+          if [ ! -d "archive" ]; then
+            echo "Error: Failed to build font, please check [Run custom script] step."
+            exit 1
+          fi
+          tag="v$(date +%Y%m%d)"
+          gh release create "${tag}" --title "Maple Mono Narrow/Slim ${tag}" --target "$BRANCH" --generate-notes --latest archive/*.*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
