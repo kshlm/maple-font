@@ -26,7 +26,7 @@
     "extrabold": 800
   },
   "codepoint_alias": {},
-  "line_height": 1.0,
+  "line_height": 0.88,
   "width": "default",
   "feature_freeze": {
     "cv01": "ignore",
@@ -85,7 +85,7 @@
   },
   "nerd_font": {
     "enable": true,
-    "version": "3.5.0",
+    "version": "3.5.1",
     "mono": false,
     "propo": false,
     "variable": false,
